@@ -147,5 +147,5 @@ def print_results(runs, prec = 3):
 if __name__ == "__main__":
     make_figure1()
     make_figures23()
-    # r = compute()
-    # print_results(r)
+    r = compute()
+    print_results(r)

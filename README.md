@@ -14,7 +14,7 @@ To run the code, enter the src directory and issue the command:
 
     python run.py
 
-This will reproduce the figures in the paper and the values in the table.
+This will reproduce the figures in the paper and the values in the table. The code is tested on python 3.3.5 with numpy 1.9.2.
 
 ## About the code
 
