@@ -24,6 +24,6 @@ This will reproduce the figures in the paper and the values in the table. The co
 
 `examples.py` contains code to read in the description of a domain of air from input and produce various artificial cases, and to compare the performance of various algorithms.
 
-`solvers.py` conatins implementations of a variety of algorithms for finding a low enthalpy configuration.
+`solvers.py` contains implementations of a variety of algorithms for finding a low enthalpy configuration.
 
-`run.py` conatins code for producing the figures and other output.
+`run.py` contains code for producing the figures and other output.
