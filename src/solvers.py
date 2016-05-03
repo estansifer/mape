@@ -105,38 +105,41 @@ def lorenz(p):
     return problem.Solution.from_k2j(p, k2j)
 
 def randallwang(p):
+    cache_h_dp = {}
+    def h_dp(j, k):
+        if (j, k) not in cache_h_dp:
+            cache_h_dp[(j, k)] = p.h_dp(j, k)
+        return cache_h_dp[(j, k)]
+
+    cache_h = {}
+    def h(j, k):
+        if (j, k) not in cache_h:
+            cache_h[(j, k)] = p.h(j, k)
+        return cache_h[(j, k)]
+
+    # based on Solution.evaluate(self)
+    def cached_evaluate(config):
+        config.check_valid()
+        total_h = 0
+        for j in range(config.n):
+            total_h += h(j, config.j2k[j])
+        return total_h
+
     config = initial(p)
 
+    # for j in [0, 1, 2, 3, 4, 36]:
+        # for k in [0, 1, 2, 3, 4]:
+            # print ((j, k), h_dp(j, k))
+
     for k in range(p.n - 1):
-        # print (k)
-        # cur.k2j[0:k] is fixed at this point
-
-        # config_a = cur2
-        # max_h_dp_a = p.h_dp(cur2.k2j[k], k)
-# 
-        # config_b = cur2
-        # max_h_dp_b = p.h_dp(cur2.k2j[k], p.n - 1)
-# 
-        # for k2 in range(k + 1, p.n):
-            # cur2 = cur2.swap(k, k2)
-            # h_dp_a = p.h_dp(cur2.k2j[k], k)
-            # h_dp_b = p.h_dp(cur2.k2j[k], p.n - 1)
-# 
-            # if h_dp_a > max_h_dp_a:
-                # max_h_dp_a = h_dp_a
-                # config_a = cur2
-            # if h_dp_b > max_h_dp_b:
-                # max_h_dp_b = h_dp_b
-                # config_b = cur2
-
-        max_h_dp_a = p.h_dp(config.k2j[k], k)
-        max_h_dp_b = p.h_dp(config.k2j[k], p.n - 1)
+        max_h_dp_a = h_dp(config.k2j[k], k)
+        max_h_dp_b = h_dp(config.k2j[k], p.n - 1)
         k_a = k
         k_b = k
 
         for k2 in range(k + 1, p.n):
-            h_dp_a = p.h_dp(config.k2j[k2], k)
-            h_dp_b = p.h_dp(config.k2j[k2], p.n - 1)
+            h_dp_a = h_dp(config.k2j[k2], k)
+            h_dp_b = h_dp(config.k2j[k2], p.n - 1)
 
             if h_dp_a > max_h_dp_a:
                 max_h_dp_a = h_dp_a
@@ -148,12 +151,21 @@ def randallwang(p):
         config_a = config.raise_parcel(k_a, k)
         config_b = config.raise_parcel(k_b, k)
 
-        if config_a.evaluate() < config_b.evaluate():
+        # print ('k', k)
+        # print ('  A', k_a, cached_evaluate(config_a))
+        # print ('  B', k_b, cached_evaluate(config_b))
+
+        # if config_a.evaluate() < config_b.evaluate():
+        if cached_evaluate(config_a) < cached_evaluate(config_b):
             config = config_a
         else:
             config = config_b
 
     return config
+
+def randallwangsolution(p):
+    assert (p.n == 37)
+    return problem.Solution.from_k2j(p, [0, 1, 36] + list(range(2, 36)))
 
 def munkres(p, worst = False):
     n = p.n
@@ -216,13 +228,14 @@ def munkres(p, worst = False):
 
 solvers = {
     'initial' : initial,
-    'random' : shuffle,
-    'random-100' : (lambda p : shuffle_best(p, 100)),
+    # 'random' : shuffle,
+    # 'random-100' : (lambda p : shuffle_best(p, 100)),
     'greedy-from-top' : (lambda p : greedy(p, False)),
-    'greedy-from-bottom' : (lambda p : greedy(p, True)),
+    # 'greedy-from-bottom' : (lambda p : greedy(p, True)),
     'divide-and-conquer' : divide_and_conquer,
     'lorenz' : lorenz,
     'randallwang' : randallwang,
+    # 'randallwangsolution' : randallwangsolution,
     'munkres' : (lambda p : munkres(p, False)),
     'munkres-worst' : (lambda p : munkres(p, True))
         }

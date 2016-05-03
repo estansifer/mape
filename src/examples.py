@@ -37,8 +37,8 @@ def uniform(n, y_low = 0.001, y_high = 0.1, T_low = 250, T_high = 350, p_low = 1
 
     p = np.linspace(p_low, p_high, n)
 
-    s_low = thermo.entropy(0, thermo.atm, T_low)
-    s_high = thermo.entropy(0, thermo.atm, T_high)
+    s_low = thermo.entropy(0, thermo.bar, T_low)
+    s_high = thermo.entropy(0, thermo.bar, T_high)
     y_ = np.linspace(y_low, y_high, a)
     s_ = np.linspace(s_low, s_high, b)
     y, s = np.meshgrid(y_, s_, indexing = 'ij')
@@ -49,10 +49,14 @@ def uniform(n, y_low = 0.001, y_high = 0.1, T_low = 250, T_high = 350, p_low = 1
 def pathological_problem(n, set_initial = False):
     y0 = 0.5
     y1 = 0
-    T0 = 335        # temperature at 1 atm
-    T1 = 375        # temperature at 1 atm
-    s0 = thermo.entropy(y0, thermo.atm, T0)
-    s1 = thermo.entropy(y1, thermo.atm, T1)
+    # T0 = 335        # temperature at 1 atm
+    # T1 = 375        # temperature at 1 atm
+    # s0 = thermo.entropy(y0, thermo.atm, T0)
+    # s1 = thermo.entropy(y1, thermo.atm, T1)
+    T0 = 335        # temperature at 1 bar
+    T1 = 375        # temperature at 1 bar
+    s0 = thermo.entropy(y0, thermo.bar, T0)
+    s1 = thermo.entropy(y1, thermo.bar, T1)
 
     y = np.array(([y0] * n) + ([y1] * (9 * n)))
     s = np.array(([s0] * n) + ([s1] * (9 * n)))

@@ -50,12 +50,17 @@ sat_p_star = 1228.1             # Pa                    6-10
 ###
 
 # Value for cv_ has no source!!
+# Old value for cv_ I was using is 37.47 J / mol / K.
+# New value is from the following source:
+#   1870 J / kg / K (or 33.68857 J / mol / K)
+#   page 77
+#   Iribarne & Godson (Eds.) (2012). Atmospheric thermodynamics (Vol. 6). Springer Science & Business Media.
 
 # Derived values
 
 Md_     = air_rho * R * air_T / bar     # kg / mol      molecular weight of air
 cd_     = air_cp * Md_                  # J / mol / K   heat capacity of air, constant pressure
-cv_     = 37.47                         # J / mol / K   heat capacity of water vapor, constant p
+cv_     = 1870 * Mw_                    # J / mol / K   heat capacity of water vapor, constant p
 cl_     = lw_cp * Mw_                   # J / mol / K   heat capacity of liquid water, constant p
 
 cd      = cd_ / R                       # unitless
@@ -208,6 +213,14 @@ def compute_T_sat(y, p, s):
         return Tmax
     return opt.brentq(f, Tmin, Tmax)
 
+def compute_Tv_sat(y, p, s):
+    T = compute_T_sat(y, p, s)
+    y_s = compute_y_s_from_T(p, T)
+    return T * (1 + y_s) / (1 + y * epsilon)
+
+def compute_Tv_unsat(y, p, s):
+    return compute_T_unsat(y, p, s) * (1 + y) / (1 + y * epsilon)
+
 def compute_Mh_unsat(y, p, s):
     return (cd + y * cv) * compute_T_unsat(y, p, s)
 
@@ -225,6 +238,45 @@ def compute_Mh_dp_sat(y, p, s):
     y_s = compute_y_s_from_T(p, T)
     return (1 + y_s) * T / p
 
+##############################
+#
+#   User-friendly thermodynamic functions with user-friendly names
+#
+##############################
+
+# w is kg / kg
+def compute_w(y):
+    return y * epsilon
+
+# y is mol / mol
+def compute_y(w):
+    return w / epsilon
+
+# kg / mol
+def molecular_weight_water():
+    return Mw_
+
+# kg / mol
+def molecular_weight_dry_air():
+    return Md_
+
+# kg / mol
+def molecular_weight_moist_air(y):
+    return (Md_ + y * Mw_) / (1 + y)
+
+# partial pressure of water vapor at the saturation point
+# Pa
+def saturation_vapor_pressure(T):
+    return p_star(T)
+
+# J / mol
+def latent_heat_condensation(T):
+    return compute_ell(T) * R * T
+
+# True or False
+def is_saturated(y, p, T):
+    return compute_issat_ypT(y, p, T)
+
 # J / kg / K
 def entropy(y, p, T):
     if compute_issat_ypT(y, p, T):
@@ -239,6 +291,13 @@ def temperature(y, p, s):
     else:
         return compute_T_unsat(y, p, s)
 
+# K
+def virtual_temperature(y, p, s):
+    if compute_issat_yps(y, p, s):
+        return compute_Tv_sat(y, p, s)
+    else:
+        return compute_Tv_unsat(y, p, s)
+
 # J / kg
 def enthalpy(y, p, s):
     if compute_issat_yps(y, p, s):
@@ -252,3 +311,16 @@ def enthalpy_dp(y, p, s):
         return compute_Mh_dp_sat(y, p, s) / compute_M(y)
     else:
         return compute_Mh_dp_unsat(y, p, s) / compute_M(y)
+
+# For a parcel moving from pold to pnew, given the old temperature,
+# compute the new temperature
+# K
+def new_temperature(y, Told, pold, pnew):
+    return temperature(y, pnew, entropy(y, pold, Told))
+
+# For a parcel moving from pold to pnew, given the old temperature,
+# compute the change in enthalpy
+# J / kg
+def change_in_enthalpy(y, Told, pold, pnew):
+    s = entropy(y, Told, pold)
+    return enthalpy(y, pnew, s) - enthalpy(y, pold, s)

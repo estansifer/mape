@@ -9,6 +9,12 @@ def array1d(x):
         x_ = x_.reshape((1,))
     return x_
 
+def split(x, n):
+    x_ = []
+    for i in x:
+        x_ += [i] * n
+    return x_
+
 class Problem:
     def __init__(self, y, p, s):
         self.y = array1d(y)
@@ -47,6 +53,18 @@ class Problem:
             raise ValueError()
         else:
             return (self.h(j, k + 1) - self.h(j, k)) / (self.p[k + 1] - self.p[k])
+
+    # Results in duplicate pressures, which messes up Lorenz
+    def splitA(self, n):
+        return Problem(split(self.y, n), split(self.p, n), split(self.s, n))
+
+    def splitB(self, n):
+        dp = float(self.p[1] - self.p[0])
+        plow = self.p[0] - dp / 2
+        phigh = plow + dp * self.n
+
+        p = np.linspace(plow, phigh, self.n * n + 2)[1:-1]
+        return Problem(split(self.y, n), p, split(self.s, n))
 
 # 'j' refers to the index of the parcel, i.e., the index for the y and s arrays
 # 'k' refers to the index of the pressure level, i.e. the index for the p array
