@@ -12,7 +12,8 @@ import examples
 
 
 def make_figure2():
-    plt.rc('font', size = 15)
+    plt.rc('font', size = 17)
+    plt.rc('text', usetex = True)
     # Values for the pathological problem
     y0 = 0.5
     y1 = 0
@@ -39,7 +40,7 @@ def make_figure2():
     plt.clf()
     plt.plot(dhdp1, p / 100, '-', label = 'dry parcel')
     plt.plot(dhdp0, p / 100, '--', label = 'wet parcel')
-    plt.xlabel("$\partial_p h$ (J kg$^{-1}$ Pa$^{-1}$)")
+    plt.xlabel("{\\huge $\\partial_p h$} (J kg$^{-1}$ Pa$^{-1}$)")
     plt.ylabel("Pressure (hPa)")
     plt.ylim(670, 380)
     plt.legend(loc = 'lower right', frameon = False)
@@ -64,6 +65,7 @@ def make_figure2():
 
 def make_figure1():
     plt.rc('font', size = 13)
+    plt.rc('text', usetex = True)
     p1 = examples.problem1
     # sol = solvers.divide_and_conquer(p1)
     sol = solvers.munkres(p1)
@@ -117,8 +119,8 @@ def make_figure1():
     ax.set_ylim(0.003 * thermo.epsilon, 0.022 * thermo.epsilon)
     ax.set_zlim(1000, 200)
     ax.view_init(elev=30, azim=160)
-    ax.set_xlabel("Temperature (K) at 1000 hPa")
-    ax.set_ylabel("Water content (kg per kg)")
+    ax.set_xlabel("{\\tiny .} \nTemperature (K) at 1000 hPa")
+    ax.set_ylabel("{\\tiny .} \nWater content (kg per kg)")
     ax.set_zlabel("Pressure (hPa)")
     plt.subplots_adjust(bottom = 0.1, right = 1, left = 0)
     plt.savefig('../output/Stansifer_Fig1.png')
