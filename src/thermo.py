@@ -49,8 +49,7 @@ sat_p_star = 1228.1             # Pa                    6-10
 # End of CRC reference values
 ###
 
-# Value for cv_ has no source!!
-# Old value for cv_ I was using is 37.47 J / mol / K.
+# Old value of cv_ I was using is 37.47 J / mol / K.
 # New value is from the following source:
 #   1870 J / kg / K (or 33.68857 J / mol / K)
 #   page 77
@@ -268,6 +267,14 @@ def molecular_weight_moist_air(y):
 # Pa
 def saturation_vapor_pressure(T):
     return p_star(T)
+
+# unitless
+def relative_humidity(y, p, T):
+    y_s = compute_y_s_from_T(p, T)
+    if y > y_s:
+        return 1
+    else:
+        return y / y_s
 
 # J / mol
 def latent_heat_condensation(T):

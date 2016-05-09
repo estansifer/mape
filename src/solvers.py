@@ -127,10 +127,6 @@ def randallwang(p):
 
     config = initial(p)
 
-    # for j in [0, 1, 2, 3, 4, 36]:
-        # for k in [0, 1, 2, 3, 4]:
-            # print ((j, k), h_dp(j, k))
-
     for k in range(p.n - 1):
         max_h_dp_a = h_dp(config.k2j[k], k)
         max_h_dp_b = h_dp(config.k2j[k], p.n - 1)
@@ -150,10 +146,6 @@ def randallwang(p):
 
         config_a = config.raise_parcel(k_a, k)
         config_b = config.raise_parcel(k_b, k)
-
-        # print ('k', k)
-        # print ('  A', k_a, cached_evaluate(config_a))
-        # print ('  B', k_b, cached_evaluate(config_b))
 
         # if config_a.evaluate() < config_b.evaluate():
         if cached_evaluate(config_a) < cached_evaluate(config_b):

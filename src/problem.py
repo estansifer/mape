@@ -1,4 +1,6 @@
 import numpy as np
+import scipy.interpolate as sint
+
 import thermo
 
 def array1d(x):
@@ -9,11 +11,11 @@ def array1d(x):
         x_ = x_.reshape((1,))
     return x_
 
-def split(x, n):
-    x_ = []
-    for i in x:
-        x_ += [i] * n
-    return x_
+# def split(x, n):
+    # x_ = []
+    # for i in x:
+        # x_ += [i] * n
+    # return x_
 
 class Problem:
     def __init__(self, y, p, s):
@@ -55,16 +57,28 @@ class Problem:
             return (self.h(j, k + 1) - self.h(j, k)) / (self.p[k + 1] - self.p[k])
 
     # Results in duplicate pressures, which messes up Lorenz
-    def splitA(self, n):
-        return Problem(split(self.y, n), split(self.p, n), split(self.s, n))
+    # n -- number of times to duplicate each parcel (must be integer)
+    # def splitA(self, n):
+        # return Problem.from_yps(split(self.y, n), split(self.p, n), split(self.s, n))
 
-    def splitB(self, n):
-        dp = float(self.p[1] - self.p[0])
-        plow = self.p[0] - dp / 2
-        phigh = plow + dp * self.n
+    # n -- number of times to duplicate each parcel (must be integer)
+    # def splitB(self, n):
+        # dp = float(self.p[1] - self.p[0])
+        # plow = self.p[0] - dp / 2
+        # phigh = plow + dp * self.n
+#
+        # p = np.linspace(plow, phigh, self.n * n + 2)[1:-1]
+        # return Problem.from_yps(split(self.y, n), p, split(self.s, n))
 
-        p = np.linspace(plow, phigh, self.n * n + 2)[1:-1]
-        return Problem(split(self.y, n), p, split(self.s, n))
+    # This is the preferred interpolation method, as it interpolates all of y, p, and s.
+    # Interpolation is linear in y-p-s space (equivalently, also in w-p-s space).
+    # n -- number of parcels to end up with
+    # def splitC(self, n):
+    def lin_interpolate(self, n):
+        pnew = np.linspace(self.p[0], self.p[-1], n)
+        ynew = sint.interp1d(self.p, self.y)(pnew)
+        snew = sint.interp1d(self.p, self.s)(pnew)
+        return Problem.from_yps(ynew, pnew, snew)
 
 # 'j' refers to the index of the parcel, i.e., the index for the y and s arrays
 # 'k' refers to the index of the pressure level, i.e. the index for the p array

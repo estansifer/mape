@@ -21,6 +21,8 @@ def make_figure2():
     s0 = thermo.entropy(y0, thermo.bar, T0)
     s1 = thermo.entropy(y1, thermo.bar, T1)
 
+    print ('value of w for wet parcel', thermo.compute_w(y0))
+
     n = 10000
     p = np.linspace(4e4, 6.5e4, n)
     dhdp0 = np.zeros((n,))
@@ -50,15 +52,15 @@ def make_figure2():
     plt.savefig('../output/Stansifer_Fig2.png')
     plt.close()
 
-    plt.clf()
-    plt.plot(p / 100, Tv1, '-', label = 'dry air')
-    plt.plot(p / 100, Tv0, '--', label = 'wet air')
-    plt.xlabel("Pressure (hPa)")
-    plt.ylabel("virtual potential temperature (K)")
-    plt.xlim(380, 670)
-    plt.legend()
-    plt.savefig('../output/Stansifer_Fig_Other3.png')
-    plt.close()
+    # plt.clf()
+    # plt.plot(p / 100, Tv1, '-', label = 'dry air')
+    # plt.plot(p / 100, Tv0, '--', label = 'wet air')
+    # plt.xlabel("Pressure (hPa)")
+    # plt.ylabel("virtual potential temperature (K)")
+    # plt.xlim(380, 670)
+    # plt.legend()
+    # plt.savefig('../output/Stansifer_Fig_Other3.png')
+    # plt.close()
 
 def make_figure1():
     plt.rc('font', size = 13)
@@ -76,29 +78,29 @@ def make_figure1():
         pt[i] = thermo.temperature(y[i], thermo.bar, s[i])
 
     # cmap = plt.get_cmap('hot')
-    cmap = plt.get_cmap('gray')
+    # cmap = plt.get_cmap('gray')
 
-    plt.clf()
-    sc = plt.scatter(pt, y, c = p / 100, cmap = cmap)
-    plt.colorbar(sc)
-    plt.xlabel("Potential temperature (K at 1000 hPa)")
-    plt.ylabel("Water content (molar fraction)")
+    # plt.clf()
+    # sc = plt.scatter(pt, y, c = p / 100, cmap = cmap)
+    # plt.colorbar(sc)
+    # plt.xlabel("Potential temperature (K at 1000 hPa)")
+    # plt.ylabel("Water content (molar fraction)")
     # plt.title("Pressure (in mbar) distribution at minimum enthalpy")
-    plt.xlim(270, 500)
-    plt.ylim(0, 0.025)
-    plt.savefig('../output/Stansifer_Fig_Other.png')
-    plt.close()
+    # plt.xlim(270, 500)
+    # plt.ylim(0, 0.025)
+    # plt.savefig('../output/Stansifer_Fig_Other.png')
+    # plt.close()
 
-    plt.clf()
-    sc = plt.scatter(pt, y, c = p / 100, cmap = cmap)
-    plt.colorbar(sc)
-    plt.xlabel("Potential temperature (K at 1000 hPa)")
-    plt.ylabel("Water content (molar fraction)")
+    # plt.clf()
+    # sc = plt.scatter(pt, y, c = p / 100, cmap = cmap)
+    # plt.colorbar(sc)
+    # plt.xlabel("Potential temperature (K at 1000 hPa)")
+    # plt.ylabel("Water content (molar fraction)")
     # plt.title("Pressure (in mbar) distribution at minimum enthalpy")
-    plt.xlim(270, 350)
-    plt.ylim(0, 0.025)
-    plt.savefig('../output/Stansifer_Fig_Other2.png')
-    plt.close()
+    # plt.xlim(270, 350)
+    # plt.ylim(0, 0.025)
+    # plt.savefig('../output/Stansifer_Fig_Other2.png')
+    # plt.close()
 
     pt_ = pt.reshape(40, 40)
     y_ = y.reshape(40, 40)
@@ -111,13 +113,9 @@ def make_figure1():
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     ax.plot_wireframe(pt_, y_ * thermo.epsilon, p_ / 100, rstride = 1, cstride = 1)
-    print ("Potential temperature range (K) ", np.nanmin(pt_), np.nanmax(pt_))
-    print ("Water content range (kg per kg) ", np.nanmin(y_) * thermo.epsilon, np.nanmax(y_) * thermo.epsilon)
-    print ("Pressure range (hPa) ", np.nanmin(p_ / 100), np.nanmax(p_ / 100))
     ax.set_xlim(275, 321)
     ax.set_ylim(0.003 * thermo.epsilon, 0.022 * thermo.epsilon)
     ax.set_zlim(1000, 200)
-    # ax.view_init(elev=30, azim = 320)
     ax.view_init(elev=30, azim=160)
     ax.set_xlabel("Temperature (K) at 1000 hPa")
     ax.set_ylabel("Water content (kg per kg)")
@@ -126,17 +124,17 @@ def make_figure1():
     plt.savefig('../output/Stansifer_Fig1.png')
     plt.close()
 
-    print (thermo.epsilon)
-
 def compute(problems = None):
     if problems is None:
-        problems = [examples.problem2, examples.problem1, examples.pathological_problem(100, True)]
-        # p = examples.problem2
-        # problems = [p, p.splitB(2), p.splitB(3), p.splitB(7), p.splitB(10)]
+        problems = [examples.problem2.lin_interpolate(1000),
+                examples.problem1,
+                examples.pathological_problem(100, True)]
 
     runs = [examples.Results(p) for p in problems]
     for r in runs:
+        print ('Running all solvers on a problem...', end = '')
         r.run()
+        print (' done.')
 
     # print ('Initial')
     # print (runs[0].results['initial'].solution)

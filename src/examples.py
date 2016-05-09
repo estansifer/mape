@@ -127,7 +127,6 @@ class Results:
             result = Result(self.problem, self.solvers[name])
             self.results[name] = result
             result.name = name
-            print (name)
             result.run()
             if (min_h is None) or (min_h > result.enthalpy):
                 min_h = result.enthalpy
