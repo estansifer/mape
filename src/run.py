@@ -132,7 +132,7 @@ def compute(problems = None):
 
     runs = [examples.Results(p) for p in problems]
     for r in runs:
-        print ('Running all solvers on a problem...', end = '')
+        print ('Running all solvers on a problem...', end = '', flush = True)
         r.run()
         print (' done.')
 
@@ -194,6 +194,7 @@ def print_results(runs, prec = 5):
         print (s)
 
 if __name__ == "__main__":
+    # Total execution time about 7 minutes on my machine
     make_figure1()
     make_figure2()
     r = compute()
