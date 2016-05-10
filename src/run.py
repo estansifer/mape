@@ -43,7 +43,7 @@ def make_figure2():
     plt.xlabel("{\\huge $\\partial_p h$} (J kg$^{-1}$ Pa$^{-1}$)")
     plt.ylabel("Pressure (hPa)")
     plt.ylim(670, 380)
-    plt.legend(loc = 'lower right', frameon = False)
+    # plt.legend(loc = 'lower right', frameon = False)
 
     ax = plt.gca()
     ax.tick_params(direction='out', right=False, top = False)
