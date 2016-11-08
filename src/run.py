@@ -43,7 +43,7 @@ def make_figure2():
     plt.xlabel("{\\huge $\\partial_p h$} (J kg$^{-1}$ Pa$^{-1}$)")
     plt.ylabel("Pressure (hPa)")
     plt.ylim(670, 380)
-    # plt.legend(loc = 'lower right', frameon = False)
+    plt.legend(loc = 'lower right', frameon = False)
 
     ax = plt.gca()
     ax.tick_params(direction='out', right=False, top = False)
@@ -51,20 +51,13 @@ def make_figure2():
     ax.spines['top'].set_visible(False)
     plt.subplots_adjust(bottom = 0.15, left = 0.125)
     plt.savefig('../output/Stansifer_Fig2.png')
+    plt.savefig('../output/Stansifer_Fig2.ps', format='ps')
+    plt.savefig('../output/Stansifer_Fig2.eps', format='eps')
+    plt.savefig('../output/Stansifer_Fig2.pdf', format='pdf')
     plt.close()
 
-    # plt.clf()
-    # plt.plot(p / 100, Tv1, '-', label = 'dry air')
-    # plt.plot(p / 100, Tv0, '--', label = 'wet air')
-    # plt.xlabel("Pressure (hPa)")
-    # plt.ylabel("virtual potential temperature (K)")
-    # plt.xlim(380, 670)
-    # plt.legend()
-    # plt.savefig('../output/Stansifer_Fig_Other3.png')
-    # plt.close()
-
 def make_figure1():
-    plt.rc('font', size = 13)
+    plt.rc('font', size = 17) #13
     plt.rc('text', usetex = True)
     p1 = examples.problem1
     # sol = solvers.divide_and_conquer(p1)
@@ -109,21 +102,54 @@ def make_figure1():
     p_ = p.reshape(40, 40)
 
     p_ = np.array(p_, copy = True)
-    p_[pt_ > 330] = np.nan
+    # p_[pt_ > 330] = np.nan
+    p_[pt_ > 321] = np.nan
+
+    # print (np.max(y), np.min(y), np.min(pt), np.max(pt))
 
     plt.clf()
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.plot_wireframe(pt_, y_ * thermo.epsilon, p_ / 100, rstride = 1, cstride = 1)
-    ax.set_xlim(275, 321)
-    ax.set_ylim(0.003 * thermo.epsilon, 0.022 * thermo.epsilon)
-    ax.set_zlim(1000, 200)
-    ax.view_init(elev=30, azim=160)
-    ax.set_xlabel("{\\tiny .} \nTemperature (K) at 1000 hPa")
-    ax.set_ylabel("{\\tiny .} \nWater content (kg per kg)")
-    ax.set_zlabel("Pressure (hPa)")
-    plt.subplots_adjust(bottom = 0.1, right = 1, left = 0)
+    fig = plt.figure(figsize=plt.figaspect(0.45))
+
+    ax3d = fig.add_subplot(1, 2, 1, projection='3d')
+    ax3d.plot_wireframe(pt_, y_ * thermo.epsilon, p_ / 100, colors = [(0, 0, 1)], rstride = 1, cstride = 1)
+    ax3d.set_xlim(272, 321)
+    ax3d.set_ylim(0.00 * thermo.epsilon, 0.025 * thermo.epsilon)
+    ax3d.yaxis.set_ticks(np.linspace(0, 0.015, 6))
+    # ax3d.set_xlim(275, 321)
+    # ax3d.set_ylim(0.003 * thermo.epsilon, 0.022 * thermo.epsilon)
+    ax3d.set_zlim(1000, 200)
+    ax3d.zaxis.set_ticks(np.linspace(1000, 200, 5))
+    ax3d.view_init(elev=30, azim=160)
+    ax3d.set_xlabel("{\\tiny .} \nTemperature (K) at 1000 hPa")
+    ax3d.set_ylabel("{\\tiny .} \nWater content (kg per kg)")
+    ax3d.set_zlabel("Pressure (hPa)")
+    # plt.subplots_adjust(bottom = 0.1, right = 1, left = 0)
+
+    for item in ([ax3d.xaxis.label, ax3d.yaxis.label, ax3d.zaxis.label] +
+                ax3d.get_xticklabels() + ax3d.get_yticklabels()):
+        item.set_fontsize(13)
+
+    ax2d = fig.add_subplot(1, 2, 2)
+    ax2d.scatter(pt, p / 100, s = 10, c = [(0, 0, 1)], edgecolors = 'none')
+    ax2d.set_xlim(321, 275) # 275, 321)
+    ax2d.set_ylim(1000, 200)
+    ax2d.yaxis.tick_right()
+    ax2d.yaxis.set_label_position('right')
+    ax2d.set_xlabel("Temperature (K) at 1000 hPa")
+    ax2d.set_ylabel("Pressure (hPa)")
+    ax2d.tick_params(direction='out', left=False, right=True, top=False)
+    ax2d.spines['left'].set_visible(False)
+    ax2d.spines['top'].set_visible(False)
+    # plt.subplots_adjust(bottom = 0.15, left = 0.125)
+    plt.subplots_adjust(bottom = 0.25, left = 0)
+
+    ax3d.text2D(0.5, -0.21, '(a)', transform=ax3d.transAxes, fontsize=13, fontweight='bold', va = 'top')
+    ax2d.text(0.5, -0.21, '(b)', transform=ax2d.transAxes, fontsize=13, fontweight='bold', va = 'top')
+
     plt.savefig('../output/Stansifer_Fig1.png')
+    plt.savefig('../output/Stansifer_Fig1.ps', format='ps')
+    plt.savefig('../output/Stansifer_Fig1.eps', format='eps')
+    plt.savefig('../output/Stansifer_Fig1.pdf', format='pdf')
     plt.close()
 
 def compute(problems = None):
